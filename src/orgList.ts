@@ -25,11 +25,18 @@ export class OrgListProvider implements vscode.TreeDataProvider<Org> {
         if (error) {
           return resolve([]);
         }
-        let obj: { result: { nonScratchOrgs: MyObj[] } } = JSON.parse(
-          stdout.toString()
-        );
+        let obj = JSON.parse(stdout.toString());
         let orgs: Org[] = [];
         for (let org of obj.result.nonScratchOrgs) {
+          orgs.push(
+            new Org(
+              org.alias,
+              org.username,
+              vscode.TreeItemCollapsibleState.None
+            )
+          );
+        }
+        for (let org of obj.result.scratchOrgs) {
           orgs.push(
             new Org(
               org.alias,
@@ -42,11 +49,6 @@ export class OrgListProvider implements vscode.TreeDataProvider<Org> {
       });
     });
   }
-}
-
-interface MyObj {
-  alias: string;
-  username: string;
 }
 
 export class Org extends vscode.TreeItem {
@@ -65,6 +67,19 @@ export class Org extends vscode.TreeItem {
 
   get description(): string {
     return this.version;
+  }
+
+  open() {
+    cp.exec(
+      "sfdx force:org:open -u " + this.label,
+      null,
+      (error, stdout, stderr) => {
+        if (error) {
+          vscode.window.showErrorMessage(`Error Opening ${this.label}.`);
+        }
+        vscode.window.showInformationMessage(`Opening ${this.label}.`);
+      }
+    );
   }
 
   iconPath = {
@@ -86,5 +101,5 @@ export class Org extends vscode.TreeItem {
     )
   };
 
-  contextValue = "dependency";
+  contextValue = "org";
 }

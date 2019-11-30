@@ -1,6 +1,6 @@
 {
-  "name": "helloworld",
-  "displayName": "HelloWorld",
+  "name": "sfdx-org-list",
+  "displayName": "SFDX Org List",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -10,8 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:orgList",
-    "onCommand:extension.helloWorld"
+    "onView:orgList"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -34,7 +33,7 @@
     },
     "commands": [
       {
-        "command": "orgList.refreshEntry",
+        "command": "orgList.refresh",
         "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -42,16 +41,27 @@
         }
       },
       {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
+        "command": "orgList.open",
+        "title": "Open",
+        "icon": {
+          "light": "resources/light/edit.svg",
+          "dark": "resources/dark/edit.svg"
+        }
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "orgList.refreshEntry",
+          "command": "orgList.refresh",
           "when": "view == orgList",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "orgList.open",
+          "when": "view == orgList && viewItem == org",
+          "group": "inline"
         }
       ]
     }
