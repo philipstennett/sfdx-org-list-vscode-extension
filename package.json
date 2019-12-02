@@ -19,7 +19,7 @@
         {
           "id": "org-list",
           "title": "Org List",
-          "icon": "media/dep.svg"
+          "icon": "media/cloud-stack.png"
         }
       ]
     },
@@ -36,16 +36,16 @@
         "command": "orgList.refresh",
         "title": "Refresh",
         "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
+          "light": "media/refresh.png",
+          "dark": "media/refresh.png"
         }
       },
       {
         "command": "orgList.open",
         "title": "Open",
         "icon": {
-          "light": "resources/light/edit.svg",
-          "dark": "resources/dark/edit.svg"
+          "light": "media/newwindow.png",
+          "dark": "media/newwindow.png"
         }
       }
     ],
