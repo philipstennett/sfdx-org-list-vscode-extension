@@ -9,7 +9,11 @@ export class OrgListProvider implements vscode.TreeDataProvider<Org> {
   readonly onDidChangeTreeData: vscode.Event<Org | undefined> = this
     ._onDidChangeTreeData.event;
 
-  constructor() {}
+  private isScratch: boolean;
+
+  constructor(isScratch: boolean) {
+    this.isScratch = isScratch;
+  }
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
@@ -27,23 +31,27 @@ export class OrgListProvider implements vscode.TreeDataProvider<Org> {
         }
         let obj = JSON.parse(stdout.toString());
         let orgs: Org[] = [];
-        for (let org of obj.result.nonScratchOrgs) {
-          orgs.push(
-            new Org(
-              org.alias,
-              org.username,
-              vscode.TreeItemCollapsibleState.None
-            )
-          );
-        }
-        for (let org of obj.result.scratchOrgs) {
-          orgs.push(
-            new Org(
-              org.alias,
-              org.username,
-              vscode.TreeItemCollapsibleState.None
-            )
-          );
+
+        if (this.isScratch) {
+          for (let org of obj.result.scratchOrgs) {
+            orgs.push(
+              new Org(
+                org.alias,
+                org.username,
+                vscode.TreeItemCollapsibleState.None
+              )
+            );
+          }
+        } else {
+          for (let org of obj.result.nonScratchOrgs) {
+            orgs.push(
+              new Org(
+                org.alias,
+                org.username,
+                vscode.TreeItemCollapsibleState.None
+              )
+            );
+          }
         }
         return resolve(orgs);
       });

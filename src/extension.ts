@@ -4,12 +4,22 @@ import * as vscode from "vscode";
 import { OrgListProvider, Org } from "./orgList";
 
 export function activate(context: vscode.ExtensionContext) {
-  const orgListProvider = new OrgListProvider();
-  vscode.window.registerTreeDataProvider("orgList", orgListProvider);
-  vscode.commands.registerCommand("orgList.refresh", () =>
-    orgListProvider.refresh()
+  const nonScratchProvider = new OrgListProvider(false);
+  vscode.window.registerTreeDataProvider(
+    "non-scratch-orgs",
+    nonScratchProvider
   );
-  vscode.commands.registerCommand("orgList.open", (org: Org) => org.open());
+  vscode.commands.registerCommand("non-scratch-orgs.refresh", () =>
+    nonScratchProvider.refresh()
+  );
+
+  const scratchProvider = new OrgListProvider(true);
+  vscode.window.registerTreeDataProvider("scratch-orgs", scratchProvider);
+  vscode.commands.registerCommand("scratch-orgs.refresh", () =>
+    scratchProvider.refresh()
+  );
+
+  vscode.commands.registerCommand("org.open", (org: Org) => org.open());
 }
 
 export function deactivate() {}

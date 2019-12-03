@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:orgList"
+    "onView:non-scratch-orgs",
+    "onView:scratch-orgs"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -26,14 +27,18 @@
     "views": {
       "org-list": [
         {
-          "id": "orgList",
-          "name": "Org List"
+          "id": "non-scratch-orgs",
+          "name": "Non Scratch Orgs"
+        },
+        {
+          "id": "scratch-orgs",
+          "name": "Scratch Orgs"
         }
       ]
     },
     "commands": [
       {
-        "command": "orgList.refresh",
+        "command": "scratch-orgs.refresh",
         "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -41,7 +46,15 @@
         }
       },
       {
-        "command": "orgList.open",
+        "command": "non-scratch-orgs.refresh",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "org.open",
         "title": "Open",
         "icon": {
           "light": "resources/light/edit.svg",
@@ -52,15 +65,20 @@
     "menus": {
       "view/title": [
         {
-          "command": "orgList.refresh",
-          "when": "view == orgList",
+          "command": "non-scratch-orgs.refresh",
+          "when": "view == non-scratch-orgs",
+          "group": "navigation"
+        },
+        {
+          "command": "scratch-orgs.refresh",
+          "when": "view == scratch-orgs",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "orgList.open",
-          "when": "view == orgList && viewItem == org",
+          "command": "org.open",
+          "when": "view == non-scratch-orgs && viewItem == org",
           "group": "inline"
         }
       ]
