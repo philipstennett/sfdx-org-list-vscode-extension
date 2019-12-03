@@ -20,7 +20,7 @@
         {
           "id": "org-list",
           "title": "Org List",
-          "icon": "media/dep.svg"
+          "icon": "media/cloud-stack.png"
         }
       ]
     },
@@ -49,16 +49,16 @@
         "command": "non-scratch-orgs.refresh",
         "title": "Refresh",
         "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
+          "light": "media/refresh.png",
+          "dark": "media/refresh.png"
         }
       },
       {
         "command": "org.open",
         "title": "Open",
         "icon": {
-          "light": "resources/light/edit.svg",
-          "dark": "resources/dark/edit.svg"
+          "light": "media/newwindow.png",
+          "dark": "media/newwindow.png"
         }
       }
     ],
@@ -87,9 +87,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "test": "node ./out/test/runTest.js"
+    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
