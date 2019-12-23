@@ -1,7 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { OrgListProvider, Org } from "./orgList";
+import { OrgListProvider } from "./orgList";
+import { Org } from "./org";
 
 export function activate(context: vscode.ExtensionContext) {
   const nonScratchProvider = new OrgListProvider(false);
@@ -20,6 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand("org.open", (org: Org) => org.open());
+  vscode.commands.registerCommand("org.logout", (org: Org) => org.logout());
+  vscode.commands.registerCommand("org.delete", (org: Org) => org.delete());
 }
 
 export function deactivate() {}

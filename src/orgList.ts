@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import * as cp from "child_process";
+import { Org } from "./org";
 
 export class OrgListProvider implements vscode.TreeDataProvider<Org> {
   private _onDidChangeTreeData: vscode.EventEmitter<
@@ -57,43 +57,4 @@ export class OrgListProvider implements vscode.TreeDataProvider<Org> {
       });
     });
   }
-}
-
-export class Org extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    private version: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(label, collapsibleState);
-  }
-
-  get tooltip(): string {
-    return `${this.label}-${this.version}`;
-  }
-
-  get description(): string {
-    return this.version;
-  }
-
-  open() {
-    cp.exec(
-      "sfdx force:org:open -u " + this.label,
-      null,
-      (error, stdout, stderr) => {
-        if (error) {
-          vscode.window.showErrorMessage(`Error Opening ${this.label}.`);
-        }
-        vscode.window.showInformationMessage(`Opening ${this.label}.`);
-      }
-    );
-  }
-
-  iconPath = {
-    light: path.join(__filename, "..", "..", "media", "cloud.png"),
-    dark: path.join(__filename, "..", "..", "media", "cloud.png")
-  };
-
-  contextValue = "org";
 }
