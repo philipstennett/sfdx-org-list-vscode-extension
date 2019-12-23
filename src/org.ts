@@ -1,11 +1,14 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as cp from "child_process";
+import { OrgListProvider } from "./orgListProvider";
 
 export class Org extends vscode.TreeItem {
   constructor(
     public readonly label: string,
-    private username: string,
+    public username: string,
+    public type: string,
+    private orgListProvider: OrgListProvider,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
     super(label, collapsibleState);
@@ -74,6 +77,7 @@ export class Org extends vscode.TreeItem {
                     vscode.window.showInformationMessage(
                       `Logged out of ${this.label}.`
                     );
+                    this.orgListProvider.removeItem(this);
                     resolve();
                   }
                 );
@@ -114,6 +118,7 @@ export class Org extends vscode.TreeItem {
                     vscode.window.showInformationMessage(
                       `Deleted ${this.label}.`
                     );
+                    this.orgListProvider.removeItem(this);
                     resolve();
                   }
                 );
@@ -129,5 +134,7 @@ export class Org extends vscode.TreeItem {
     dark: path.join(__filename, "..", "..", "media", "cloud.png")
   };
 
-  contextValue = "org";
+  get contextValue() {
+    return this.type + "-org";
+  }
 }
