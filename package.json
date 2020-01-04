@@ -1,8 +1,10 @@
 {
   "name": "sfdx-org-list",
   "displayName": "SFDX Org List",
-  "description": "",
+  "description": "Displays a list of authenticated orgs for quick logins",
   "version": "0.0.1",
+  "publisher": "philstennett",
+  "repository": "https://github.com/philipstennett/sfdx-org-list-vscode-extension",
   "engines": {
     "vscode": "^1.40.0"
   },
