@@ -12,8 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:non-scratch-orgs",
-    "onView:scratch-orgs"
+    "onView:org-list"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -29,26 +28,14 @@
     "views": {
       "org-list": [
         {
-          "id": "non-scratch-orgs",
-          "name": "Non Scratch Orgs"
-        },
-        {
-          "id": "scratch-orgs",
-          "name": "Scratch Orgs"
+          "id": "org-list",
+          "name": "Orgs"
         }
       ]
     },
     "commands": [
       {
-        "command": "scratch-orgs.refresh",
-        "title": "Refresh",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
-      },
-      {
-        "command": "non-scratch-orgs.refresh",
+        "command": "org-list.refresh",
         "title": "Refresh",
         "icon": {
           "light": "media/refresh.png",
@@ -62,26 +49,37 @@
           "light": "media/newwindow.png",
           "dark": "media/newwindow.png"
         }
+      },
+      {
+        "command": "org.logout",
+        "title": "Logout"
+      },
+      {
+        "command": "org.delete",
+        "title": "Delete"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "non-scratch-orgs.refresh",
-          "when": "view == non-scratch-orgs",
-          "group": "navigation"
-        },
-        {
-          "command": "scratch-orgs.refresh",
-          "when": "view == scratch-orgs",
+          "command": "org-list.refresh",
+          "when": "view == org-list",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "org.open",
-          "when": "view == non-scratch-orgs && viewItem == org",
+          "when": "viewItem == non-scratch-org || viewItem == scratch-org",
           "group": "inline"
+        },
+        {
+          "command": "org.logout",
+          "when": "viewItem == non-scratch-org"
+        },
+        {
+          "command": "org.delete",
+          "when": "viewItem == scratch-org"
         }
       ]
     }
