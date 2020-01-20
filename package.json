@@ -35,8 +35,8 @@
     },
     "commands": [
       {
-        "command": "org-list.refresh",
-        "title": "Refresh",
+        "command": "org-list.reload",
+        "title": "Reload",
         "icon": {
           "light": "media/refresh.png",
           "dark": "media/refresh.png"
@@ -51,6 +51,10 @@
         }
       },
       {
+        "command": "org.rename",
+        "title": "Change Alias"
+      },
+      {
         "command": "org.logout",
         "title": "Logout"
       },
@@ -62,7 +66,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "org-list.refresh",
+          "command": "org-list.reload",
           "when": "view == org-list",
           "group": "navigation"
         }
@@ -72,6 +76,10 @@
           "command": "org.open",
           "when": "viewItem == non-scratch-org || viewItem == scratch-org",
           "group": "inline"
+        },
+        {
+          "command": "org.rename",
+          "when": "viewItem == non-scratch-org || viewItem == scratch-org"
         },
         {
           "command": "org.logout",

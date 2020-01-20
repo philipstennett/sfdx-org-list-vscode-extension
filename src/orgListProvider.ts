@@ -10,15 +10,20 @@ export class OrgListProvider
   readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this
     ._onDidChangeTreeData.event;
 
-  private orgTree: any;
+  private scratchOrgs: Array<Org> = [];
+  private nonScratchOrgs: Array<Org> = [];
 
   constructor() {}
 
-  init(): Promise<void> {
+  init(): Thenable<void> {
     return this.loadOrgList();
   }
 
   refresh(): void {
+    this._onDidChangeTreeData.fire();
+  }
+
+  reload(): void {
     this.loadOrgList().then(() => {
       this._onDidChangeTreeData.fire();
     });
@@ -31,39 +36,14 @@ export class OrgListProvider
   getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
     return new Promise<vscode.TreeItem[]>((resolve, reject) => {
       if (element) {
-        let orgs: Org[] = [];
-        if (element.label === "Non Scratch Orgs") {
-          for (let org of this.orgTree.nonScratchOrgs) {
-            orgs.push(
-              new Org(
-                org.alias,
-                org.username,
-                "non-scratch",
-                this,
-                vscode.TreeItemCollapsibleState.None
-              )
-            );
-          }
-        } else if (element.label === "Scratch Orgs") {
-          for (let org of this.orgTree.scratchOrgs) {
-            orgs.push(
-              new Org(
-                org.alias,
-                org.username,
-                "scratch",
-                this,
-                vscode.TreeItemCollapsibleState.None
-              )
-            );
-          }
-        }
-        return resolve(orgs);
+        return resolve(
+          element.label === "Scratch Orgs"
+            ? this.scratchOrgs
+            : this.nonScratchOrgs
+        );
       } else {
         let treeItems: vscode.TreeItem[] = [];
-        if (
-          this.orgTree.nonScratchOrgs &&
-          this.orgTree.nonScratchOrgs.length > 0
-        ) {
+        if (this.nonScratchOrgs && this.nonScratchOrgs.length > 0) {
           treeItems.push(
             new vscode.TreeItem(
               "Non Scratch Orgs",
@@ -71,7 +51,7 @@ export class OrgListProvider
             )
           );
         }
-        if (this.orgTree.scratchOrgs && this.orgTree.scratchOrgs.length > 0) {
+        if (this.scratchOrgs && this.scratchOrgs.length > 0) {
           treeItems.push(
             new vscode.TreeItem(
               "Scratch Orgs",
@@ -84,26 +64,64 @@ export class OrgListProvider
     });
   }
 
-  loadOrgList(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      cp.exec("sfdx force:org:list --json", null, (error, stdout, stderr) => {
-        if (error) {
-          return reject("Loading org list failed.");
-        }
-        this.orgTree = JSON.parse(stdout.toString()).result;
-        console.debug("got orgs");
-        return resolve();
-      });
-    });
+  loadOrgList(): Thenable<void> {
+    return vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "Loading Org List",
+        cancellable: false
+      },
+      () => {
+        return new Promise((resolve, reject) => {
+          cp.exec(
+            "sfdx force:org:list --json",
+            null,
+            (error, stdout, stderr) => {
+              if (error) {
+                return reject("Loading org list failed.");
+              }
+              let orgTree = JSON.parse(stdout.toString()).result;
+              this.nonScratchOrgs = [];
+              for (let org of orgTree.nonScratchOrgs) {
+                this.nonScratchOrgs.push(
+                  new Org(
+                    org.alias,
+                    org.username,
+                    org.connectedStatus,
+                    "non-scratch",
+                    this,
+                    vscode.TreeItemCollapsibleState.None
+                  )
+                );
+              }
+              this.scratchOrgs = [];
+              for (let org of orgTree.scratchOrgs) {
+                this.scratchOrgs.push(
+                  new Org(
+                    org.alias,
+                    org.username,
+                    org.connectedStatus,
+                    "scratch",
+                    this,
+                    vscode.TreeItemCollapsibleState.None
+                  )
+                );
+              }
+              return resolve();
+            }
+          );
+        });
+      }
+    );
   }
 
   removeItem(org: Org): void {
     if (org.type === "non-scratch") {
-      this.orgTree.nonScratchOrgs = this.orgTree.nonScratchOrgs.filter(
+      this.nonScratchOrgs = this.nonScratchOrgs.filter(
         (x: any) => x.username !== org.username
       );
     } else if (org.type === "scratch") {
-      this.orgTree.scratchOrgs = this.orgTree.scratchOrgs.filter(
+      this.scratchOrgs = this.scratchOrgs.filter(
         (x: any) => x.username !== org.username
       );
     }

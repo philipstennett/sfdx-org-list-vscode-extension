@@ -5,17 +5,18 @@ import { OrgListProvider } from "./orgListProvider";
 
 export class Org extends vscode.TreeItem {
   constructor(
-    public readonly label: string,
+    public alias: string,
     public username: string,
+    public status: string,
     public type: string,
     private orgListProvider: OrgListProvider,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
-    super(label, collapsibleState);
+    super(alias, collapsibleState);
   }
 
   get tooltip(): string {
-    return `${this.label}-${this.username}`;
+    return `Status: ${this.status}`;
   }
 
   get description(): string {
@@ -26,7 +27,7 @@ export class Org extends vscode.TreeItem {
     vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: `Opening ${this.label}.`,
+        title: `Opening ${this.alias}.`,
         cancellable: false
       },
       () => {
@@ -36,7 +37,7 @@ export class Org extends vscode.TreeItem {
             null,
             (error, stdout, stderr) => {
               if (error) {
-                vscode.window.showErrorMessage(`Error opening ${this.label}.`);
+                vscode.window.showErrorMessage(`Error opening ${this.alias}.`);
                 reject();
               }
               resolve();
@@ -47,10 +48,44 @@ export class Org extends vscode.TreeItem {
     );
   }
 
+  rename() {
+    vscode.window.showInputBox().then(name => {
+      if (name) {
+        this.alias = name;
+        this.label = name;
+        vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: `Changing alias for ${this.username} to ${this.alias}.`,
+            cancellable: false
+          },
+          () => {
+            return new Promise((resolve, reject) => {
+              cp.exec(
+                `sfdx force:alias:set ${this.alias}=${this.username}`,
+                null,
+                (error, stdout, stderr) => {
+                  if (error) {
+                    vscode.window.showErrorMessage(
+                      `Error changing alias for ${this.username}.`
+                    );
+                    reject();
+                  }
+                  this.orgListProvider.reload();
+                  resolve();
+                }
+              );
+            });
+          }
+        );
+      }
+    });
+  }
+
   logout() {
     vscode.window
       .showInformationMessage(
-        `Are you sure you want to log out of ${this.label}?`,
+        `Are you sure you want to log out of ${this.alias}?`,
         "Cancel",
         "Logout"
       )
@@ -59,7 +94,7 @@ export class Org extends vscode.TreeItem {
           vscode.window.withProgress(
             {
               location: vscode.ProgressLocation.Notification,
-              title: `Logging out ${this.label}.`,
+              title: `Logging out ${this.alias}.`,
               cancellable: false
             },
             () => {
@@ -70,12 +105,12 @@ export class Org extends vscode.TreeItem {
                   (error, stdout, stderr) => {
                     if (error) {
                       vscode.window.showErrorMessage(
-                        `Error logging out of ${this.label}.`
+                        `Error logging out of ${this.alias}.`
                       );
                       reject();
                     }
                     vscode.window.showInformationMessage(
-                      `Logged out of ${this.label}.`
+                      `Logged out of ${this.alias}.`
                     );
                     this.orgListProvider.removeItem(this);
                     resolve();
@@ -91,7 +126,7 @@ export class Org extends vscode.TreeItem {
   delete() {
     vscode.window
       .showInformationMessage(
-        `Are you sure you want to delete ${this.label}?`,
+        `Are you sure you want to delete ${this.alias}?`,
         "Cancel",
         "Delete"
       )
@@ -100,7 +135,7 @@ export class Org extends vscode.TreeItem {
           vscode.window.withProgress(
             {
               location: vscode.ProgressLocation.Notification,
-              title: `Deleting ${this.label}.`,
+              title: `Deleting ${this.alias}.`,
               cancellable: false
             },
             () => {
@@ -111,12 +146,12 @@ export class Org extends vscode.TreeItem {
                   (error, stdout, stderr) => {
                     if (error) {
                       vscode.window.showErrorMessage(
-                        `Error deleting ${this.label}.`
+                        `Error deleting ${this.alias}.`
                       );
                       reject();
                     }
                     vscode.window.showInformationMessage(
-                      `Deleted ${this.label}.`
+                      `Deleted ${this.alias}.`
                     );
                     this.orgListProvider.removeItem(this);
                     resolve();
